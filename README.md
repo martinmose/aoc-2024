@@ -15,6 +15,12 @@ This year, I decided to give Go a spin to get more familiar with the language. I
 
    Replace `XXX` with the session cookie from the Advent of Code website.
 
+## Run the program
+
+Adjust inside `main.go` what day it should run.
+
+Get the results with: `go run main.go`
+
 ## Code Formatting
 
 To ensure consistent code quality and style, here are the tools I'm using:

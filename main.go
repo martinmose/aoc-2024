@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc_2024/solutions/day1"
+	"aoc_2024/solutions/day2"
 	"fmt"
 
 	"github.com/joho/godotenv"
@@ -14,5 +14,6 @@ func main() {
 		return
 	}
 
-	day1.Run()
+	// day1.Run()
+	day2.Run()
 }
