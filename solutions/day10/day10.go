@@ -15,11 +15,6 @@ type StackNode struct {
 	end   Position
 }
 
-var (
-	uniqueCount int
-	totalCount  int
-)
-
 // Run runs the day 10 challenge
 func Run() error {
 	fmt.Println("Day 10:")
