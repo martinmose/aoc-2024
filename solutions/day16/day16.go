@@ -7,29 +7,28 @@ import (
 	"strings"
 )
 
-type Point struct {
+type point struct {
 	X, Y int
 }
 
-type Direction struct {
+type direction struct {
 	Dx, Dy int
 }
 
-// Holds all the information about the maze
-type Maze struct {
+type maze struct {
 	Grid  [][]string
-	Start Point
-	End   Point
+	Start point
+	End   point
 }
 
-type QueueItem struct {
-	Pos   Point
+type queueItem struct {
+	Pos   point
 	Dir   int
 	Score int
-	Path  []Point
+	Path  []point
 }
 
-var directions = []Direction{
+var directions = []direction{
 	{0, -1}, // Up
 	{1, 0},  // Right
 	{0, 1},  // Down
@@ -37,14 +36,15 @@ var directions = []Direction{
 }
 
 const (
-	Wall     = "#"
-	Start    = "S"
-	End      = "E"
-	TurnCost = 1000
-	MoveCost = 1
-	StartDir = 1
+	wall       = "#"
+	startConst = "S"
+	endConst   = "E"
+	turnCost   = 1000
+	moveCost   = 1
+	startDir   = 1
 )
 
+// Run runs the day 16 challenge
 func Run() error {
 	fmt.Println("Day 16:")
 
@@ -75,28 +75,28 @@ func part2Puzzle(input string) int {
 	return countUniqueTiles(paths)
 }
 
-func parseMaze(input string) Maze {
+func parseMaze(input string) maze {
 	lines := strings.Split(strings.TrimSpace(input), "\n")
 	grid := make([][]string, len(lines))
-	var start, end Point
+	var start, end point
 
 	for y, line := range lines {
 		grid[y] = strings.Split(line, "")
 		for x, ch := range grid[y] {
 			switch ch {
-			case Start:
-				start = Point{X: x, Y: y}
-			case End:
-				end = Point{X: x, Y: y}
+			case startConst:
+				start = point{X: x, Y: y}
+			case endConst:
+				end = point{X: x, Y: y}
 			}
 		}
 	}
 
-	return Maze{Grid: grid, Start: start, End: end}
+	return maze{Grid: grid, Start: start, End: end}
 }
 
-func findLowestScore(m Maze) int {
-	queue := []QueueItem{{Pos: m.Start, Dir: StartDir, Score: 0}}
+func findLowestScore(m maze) int {
+	queue := []queueItem{{Pos: m.Start, Dir: startDir, Score: 0}}
 	visited := make(map[string]bool)
 
 	for len(queue) > 0 {
@@ -120,19 +120,19 @@ func findLowestScore(m Maze) int {
 		// Try moving forward
 		nextPos := current.Pos.add(directions[current.Dir])
 		if isValid(m, nextPos) {
-			queue = append(queue, QueueItem{
+			queue = append(queue, queueItem{
 				Pos:   nextPos,
 				Dir:   current.Dir,
-				Score: current.Score + MoveCost,
+				Score: current.Score + moveCost,
 			})
 		}
 
 		// Try turning
 		for _, newDir := range []int{(current.Dir + 1) % 4, (current.Dir + 3) % 4} {
-			queue = append(queue, QueueItem{
+			queue = append(queue, queueItem{
 				Pos:   current.Pos,
 				Dir:   newDir,
-				Score: current.Score + TurnCost,
+				Score: current.Score + turnCost,
 			})
 		}
 	}
@@ -140,10 +140,10 @@ func findLowestScore(m Maze) int {
 	return -1
 }
 
-func findAllOptimalPaths(m Maze, targetScore int) [][]Point {
-	queue := []QueueItem{{Pos: m.Start, Dir: StartDir, Score: 0, Path: []Point{m.Start}}}
+func findAllOptimalPaths(m maze, targetScore int) [][]point {
+	queue := []queueItem{{Pos: m.Start, Dir: startDir, Score: 0, Path: []point{m.Start}}}
 	visited := make(map[string]int)
-	var paths [][]Point
+	var paths [][]point
 
 	for len(queue) > 0 {
 		current := queue[0]
@@ -167,22 +167,22 @@ func findAllOptimalPaths(m Maze, targetScore int) [][]Point {
 		// Try moving forward
 		nextPos := current.Pos.add(directions[current.Dir])
 		if isValid(m, nextPos) {
-			newPath := make([]Point, len(current.Path))
+			newPath := make([]point, len(current.Path))
 			copy(newPath, current.Path)
-			queue = append(queue, QueueItem{
+			queue = append(queue, queueItem{
 				Pos:   nextPos,
 				Dir:   current.Dir,
-				Score: current.Score + MoveCost,
+				Score: current.Score + moveCost,
 				Path:  append(newPath, nextPos),
 			})
 		}
 
 		// Try turning
 		for _, newDir := range []int{(current.Dir + 1) % 4, (current.Dir + 3) % 4} {
-			queue = append(queue, QueueItem{
+			queue = append(queue, queueItem{
 				Pos:   current.Pos,
 				Dir:   newDir,
-				Score: current.Score + TurnCost,
+				Score: current.Score + turnCost,
 				Path:  current.Path,
 			})
 		}
@@ -191,7 +191,7 @@ func findAllOptimalPaths(m Maze, targetScore int) [][]Point {
 	return paths
 }
 
-func countUniqueTiles(paths [][]Point) int {
+func countUniqueTiles(paths [][]point) int {
 	unique := make(map[string]bool)
 	for _, path := range paths {
 		for _, p := range path {
@@ -201,20 +201,20 @@ func countUniqueTiles(paths [][]Point) int {
 	return len(unique)
 }
 
-func isValid(m Maze, p Point) bool {
+func isValid(m maze, p point) bool {
 	return p.Y >= 0 && p.Y < len(m.Grid) &&
 		p.X >= 0 && p.X < len(m.Grid[0]) &&
-		m.Grid[p.Y][p.X] != Wall
+		m.Grid[p.Y][p.X] != wall
 }
 
-func isEnd(m Maze, p Point) bool {
+func isEnd(m maze, p point) bool {
 	return p == m.End
 }
 
-func (p Point) add(d Direction) Point {
-	return Point{X: p.X + d.Dx, Y: p.Y + d.Dy}
+func (p point) add(d direction) point {
+	return point{X: p.X + d.Dx, Y: p.Y + d.Dy}
 }
 
-func (p Point) key(dir int) string {
+func (p point) key(dir int) string {
 	return fmt.Sprintf("%d,%d,%d", p.X, p.Y, dir)
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type Position struct {
+type position struct {
 	x, y int
 }
 
@@ -31,7 +31,7 @@ func Run() error {
 
 func part1Puzzle(input string) int {
 	grid := parseInput(input)
-	antinodes := make(map[Position]bool)
+	antinodes := make(map[position]bool)
 	totalAntinodes := 0
 
 	for i := 0; i < len(grid); i++ {
@@ -46,8 +46,8 @@ func part1Puzzle(input string) int {
 						continue
 					}
 
-					manhattan := Position{x - i, y - j}
-					antinode := Position{x + manhattan.x, y + manhattan.y}
+					manhattan := position{x - i, y - j}
+					antinode := position{x + manhattan.x, y + manhattan.y}
 
 					if isValidPosition(antinode, grid) && !antinodes[antinode] {
 						antinodes[antinode] = true
@@ -63,7 +63,7 @@ func part1Puzzle(input string) int {
 
 func part2Puzzle(input string) int {
 	grid := parseInput(input)
-	antinodes := make(map[Position]bool)
+	antinodes := make(map[position]bool)
 	totalAntinodes := 0
 
 	for i := 0; i < len(grid); i++ {
@@ -78,13 +78,13 @@ func part2Puzzle(input string) int {
 						continue
 					}
 
-					manhattan := Position{x - i, y - j}
-					antinode := Position{x, y}
+					manhattan := position{x - i, y - j}
+					antinode := position{x, y}
 
-					positionsToMark := []Position{{i, j}, {x, y}}
+					positionsToMark := []position{{i, j}, {x, y}}
 
 					for {
-						antinode = Position{antinode.x + manhattan.x, antinode.y + manhattan.y}
+						antinode = position{antinode.x + manhattan.x, antinode.y + manhattan.y}
 
 						if !isValidPosition(antinode, grid) {
 							break
@@ -116,6 +116,6 @@ func parseInput(input string) [][]rune {
 	return grid
 }
 
-func isValidPosition(pos Position, grid [][]rune) bool {
+func isValidPosition(pos position, grid [][]rune) bool {
 	return pos.x >= 0 && pos.x < len(grid[0]) && pos.y >= 0 && pos.y < len(grid)
 }

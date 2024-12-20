@@ -6,47 +6,46 @@ import (
 	"strings"
 )
 
-type Pair struct {
+type pair struct {
 	R, C int
 }
 
-type Direction struct {
+type direction struct {
 	Dx, Dy int
 }
 
-var directions = map[byte]Direction{
+var directions = map[byte]direction{
 	'^': {0, -1},
 	'v': {0, 1},
 	'<': {-1, 0},
 	'>': {1, 0},
 }
 
-// Part 1 structures
-type Warehouse struct {
+type warehouse struct {
 	MoveSeq string
-	Boxes   map[Pair]struct{}
-	Robot   Pair
-	Walls   map[Pair]struct{}
+	Boxes   map[pair]struct{}
+	Robot   pair
+	Walls   map[pair]struct{}
 	Width   int
 	Height  int
 }
 
-// Part 2 structures
-type BigBox struct {
-	Left  Pair
-	Right Pair
+type bigBox struct {
+	Left  pair
+	Right pair
 }
 
-type BigWarehouse struct {
+type bigWarehouse struct {
 	MoveSeq  string
-	Boxes    map[BigBox]struct{}
-	BoxParts map[Pair]BigBox
-	Robot    Pair
-	Walls    map[Pair]struct{}
+	Boxes    map[bigBox]struct{}
+	BoxParts map[pair]bigBox
+	Robot    pair
+	Walls    map[pair]struct{}
 	Width    int
 	Height   int
 }
 
+// Run runs the day 15 challenge
 func Run() error {
 	fmt.Println("Day 15:")
 
@@ -94,15 +93,15 @@ func part2Puzzle(input string) int {
 	return score
 }
 
-func parseWarehouse(input string) Warehouse {
+func parseWarehouse(input string) warehouse {
 	parts := strings.Split(input, "\n\n")
 	lines := strings.Split(parts[0], "\n")
 	moves := strings.ReplaceAll(parts[1], "\n", "")
 
-	w := Warehouse{
+	w := warehouse{
 		MoveSeq: moves,
-		Boxes:   make(map[Pair]struct{}),
-		Walls:   make(map[Pair]struct{}),
+		Boxes:   make(map[pair]struct{}),
+		Walls:   make(map[pair]struct{}),
 	}
 
 	w.Height = len(lines)
@@ -110,7 +109,7 @@ func parseWarehouse(input string) Warehouse {
 
 	for r, line := range lines {
 		for c, ch := range line {
-			p := Pair{r, c}
+			p := pair{r, c}
 			switch ch {
 			case '#':
 				w.Walls[p] = struct{}{}
@@ -125,32 +124,32 @@ func parseWarehouse(input string) Warehouse {
 	return w
 }
 
-func newBigWarehouse(w Warehouse) BigWarehouse {
-	bw := BigWarehouse{
+func newBigWarehouse(w warehouse) bigWarehouse {
+	bw := bigWarehouse{
 		MoveSeq:  w.MoveSeq,
-		Boxes:    make(map[BigBox]struct{}),
-		BoxParts: make(map[Pair]BigBox),
-		Walls:    make(map[Pair]struct{}),
+		Boxes:    make(map[bigBox]struct{}),
+		BoxParts: make(map[pair]bigBox),
+		Walls:    make(map[pair]struct{}),
 		Height:   w.Height,
 		Width:    w.Width * 2,
 	}
 
 	// Convert robot position
-	bw.Robot = Pair{w.Robot.R, w.Robot.C * 2}
+	bw.Robot = pair{w.Robot.R, w.Robot.C * 2}
 
 	// Convert walls
 	for wall := range w.Walls {
-		wall1 := Pair{wall.R, wall.C * 2}
-		wall2 := Pair{wall1.R, wall1.C + 1}
+		wall1 := pair{wall.R, wall.C * 2}
+		wall2 := pair{wall1.R, wall1.C + 1}
 		bw.Walls[wall1] = struct{}{}
 		bw.Walls[wall2] = struct{}{}
 	}
 
 	// Convert boxes
 	for box := range w.Boxes {
-		left := Pair{box.R, box.C * 2}
-		right := Pair{box.R, left.C + 1}
-		bigBox := BigBox{Left: left, Right: right}
+		left := pair{box.R, box.C * 2}
+		right := pair{box.R, left.C + 1}
+		bigBox := bigBox{Left: left, Right: right}
 		bw.BoxParts[left] = bigBox
 		bw.BoxParts[right] = bigBox
 		bw.Boxes[bigBox] = struct{}{}
@@ -159,7 +158,7 @@ func newBigWarehouse(w Warehouse) BigWarehouse {
 	return bw
 }
 
-func move(w *Warehouse, dir byte) {
+func move(w *warehouse, dir byte) {
 	next := getNextPair(w.Robot, dir)
 	_, isWall := w.Walls[next]
 	if isWall {
@@ -174,7 +173,7 @@ func move(w *Warehouse, dir byte) {
 	}
 }
 
-func canBoxMove(w *Warehouse, box Pair, dir byte) bool {
+func canBoxMove(w *warehouse, box pair, dir byte) bool {
 	next := getNextPair(box, dir)
 	_, isWall := w.Walls[next]
 	if isWall {
@@ -187,7 +186,7 @@ func canBoxMove(w *Warehouse, box Pair, dir byte) bool {
 	return true
 }
 
-func moveBoxes(w *Warehouse, box Pair, dir byte) {
+func moveBoxes(w *warehouse, box pair, dir byte) {
 	next := getNextPair(box, dir)
 	_, isBox := w.Boxes[next]
 	if isBox {
@@ -197,7 +196,7 @@ func moveBoxes(w *Warehouse, box Pair, dir byte) {
 	w.Boxes[next] = struct{}{}
 }
 
-func bigMove(w *BigWarehouse, dir byte) {
+func bigMove(w *bigWarehouse, dir byte) {
 	next := getNextPair(w.Robot, dir)
 	_, isWall := w.Walls[next]
 	if isWall {
@@ -212,7 +211,7 @@ func bigMove(w *BigWarehouse, dir byte) {
 	}
 }
 
-func canBigBoxMove(w *BigWarehouse, side Pair, dir byte) bool {
+func canBigBoxMove(w *bigWarehouse, side pair, dir byte) bool {
 	bb := w.BoxParts[side]
 	left, right := bb.Left, bb.Right
 	leftNext := getNextPair(left, dir)
@@ -253,7 +252,7 @@ func canBigBoxMove(w *BigWarehouse, side Pair, dir byte) bool {
 	return canMove
 }
 
-func bigBoxMove(w *BigWarehouse, side Pair, dir byte) {
+func bigBoxMove(w *bigWarehouse, side pair, dir byte) {
 	bb := w.BoxParts[side]
 	left, right := bb.Left, bb.Right
 	leftNext, rightNext := getNextPair(left, dir), getNextPair(right, dir)
@@ -310,7 +309,7 @@ func bigBoxMove(w *BigWarehouse, side Pair, dir byte) {
 	w.BoxParts[rightNext] = bb
 }
 
-func getNextPair(p Pair, dir byte) Pair {
+func getNextPair(p pair, dir byte) pair {
 	d := directions[dir]
-	return Pair{p.R + d.Dy, p.C + d.Dx}
+	return pair{p.R + d.Dy, p.C + d.Dx}
 }

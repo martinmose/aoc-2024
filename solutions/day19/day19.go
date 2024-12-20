@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Run runs the day 19 challenge
 func Run() error {
 	fmt.Println("Day 19:")
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Run runs the day 17 challenge
 func Run() error {
 	fmt.Println("Day 17:")
 
@@ -34,8 +35,8 @@ func part1Puzzle(input string) string {
 }
 
 func part2Puzzle(input string) string {
-	a, b, c, program := parseRegisters(input)
-	a = 0
+	_, b, c, program := parseRegisters(input)
+	a := 0
 
 	for pos := len(program) - 1; pos >= 0; pos-- {
 		a <<= 3 // Shift left by 3 bits

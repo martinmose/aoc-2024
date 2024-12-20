@@ -9,20 +9,21 @@ import (
 	"strings"
 )
 
-type Coord struct {
+type coord struct {
 	X, Y int
 }
 
-type PriorityItem struct {
-	Coord    Coord
+type priorityItem struct {
+	Coord    coord
 	Priority int
 	Index    int
 }
 
-type PriorityQueue []*PriorityItem
+type priorityQueue []*priorityItem
 
-var directions = []Coord{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}
+var directions = []coord{{0, -1}, {0, 1}, {-1, 0}, {1, 0}}
 
+// Run runs the day 18 challenge
 func Run() error {
 	fmt.Println("Day 18:")
 
@@ -44,14 +45,14 @@ func Run() error {
 func part1Puzzle(input string) string {
 	coords := parseInput(input)
 	grid := buildGrid(coords, 1024)
-	start, end := Coord{0, 0}, Coord{70, 70}
+	start, end := coord{0, 0}, coord{70, 70}
 	return strconv.Itoa(findShortestPath(grid, start, end))
 }
 
 func part2Puzzle(input string) string {
 	coords := parseInput(input)
-	grid := make(map[Coord]bool)
-	start, end := Coord{0, 0}, Coord{70, 70}
+	grid := make(map[coord]bool)
+	start, end := coord{0, 0}, coord{70, 70}
 
 	for _, coord := range coords {
 		grid[coord] = true
@@ -63,18 +64,18 @@ func part2Puzzle(input string) string {
 	return "No blocking coordinate found"
 }
 
-func parseInput(input string) []Coord {
+func parseInput(input string) []coord {
 	lines := strings.Split(strings.TrimSpace(input), "\n")
-	var coords []Coord
+	var coords []coord
 	for _, line := range lines {
 		values := extractInts(line)
-		coords = append(coords, Coord{X: values[0], Y: values[1]})
+		coords = append(coords, coord{X: values[0], Y: values[1]})
 	}
 	return coords
 }
 
-func buildGrid(coords []Coord, limit int) map[Coord]bool {
-	grid := make(map[Coord]bool)
+func buildGrid(coords []coord, limit int) map[coord]bool {
+	grid := make(map[coord]bool)
 	for i, coord := range coords {
 		if i >= limit {
 			break
@@ -84,16 +85,16 @@ func buildGrid(coords []Coord, limit int) map[Coord]bool {
 	return grid
 }
 
-func findShortestPath(grid map[Coord]bool, start, end Coord) int {
-	distances := make(map[Coord]int)
+func findShortestPath(grid map[coord]bool, start, end coord) int {
+	distances := make(map[coord]int)
 	distances[start] = 0
 
-	pq := &PriorityQueue{}
+	pq := &priorityQueue{}
 	heap.Init(pq)
-	heap.Push(pq, &PriorityItem{Coord: start, Priority: 0})
+	heap.Push(pq, &priorityItem{Coord: start, Priority: 0})
 
 	for pq.Len() > 0 {
-		current := heap.Pop(pq).(*PriorityItem)
+		current := heap.Pop(pq).(*priorityItem)
 		if current.Coord == end {
 			return current.Priority
 		}
@@ -103,12 +104,12 @@ func findShortestPath(grid map[Coord]bool, start, end Coord) int {
 		}
 
 		for _, dir := range directions {
-			next := Coord{X: current.Coord.X + dir.X, Y: current.Coord.Y + dir.Y}
+			next := coord{X: current.Coord.X + dir.X, Y: current.Coord.Y + dir.Y}
 			if isValidMove(next, grid, end) {
 				newDist := current.Priority + 1
 				if existingDist, exists := distances[next]; !exists || newDist < existingDist {
 					distances[next] = newDist
-					heap.Push(pq, &PriorityItem{Coord: next, Priority: newDist})
+					heap.Push(pq, &priorityItem{Coord: next, Priority: newDist})
 				}
 			}
 		}
@@ -117,9 +118,9 @@ func findShortestPath(grid map[Coord]bool, start, end Coord) int {
 	return -1
 }
 
-func isPathExists(grid map[Coord]bool, start, end Coord) bool {
-	visited := make(map[Coord]bool)
-	queue := []Coord{start}
+func isPathExists(grid map[coord]bool, start, end coord) bool {
+	visited := make(map[coord]bool)
+	queue := []coord{start}
 	visited[start] = true
 
 	for len(queue) > 0 {
@@ -131,7 +132,7 @@ func isPathExists(grid map[Coord]bool, start, end Coord) bool {
 		}
 
 		for _, dir := range directions {
-			next := Coord{X: current.X + dir.X, Y: current.Y + dir.Y}
+			next := coord{X: current.X + dir.X, Y: current.Y + dir.Y}
 			if isValidMove(next, grid, end) && !visited[next] {
 				visited[next] = true
 				queue = append(queue, next)
@@ -142,25 +143,25 @@ func isPathExists(grid map[Coord]bool, start, end Coord) bool {
 	return false
 }
 
-func isValidMove(pos Coord, grid map[Coord]bool, end Coord) bool {
+func isValidMove(pos coord, grid map[coord]bool, end coord) bool {
 	return pos.X >= 0 && pos.Y >= 0 && pos.X <= end.X && pos.Y <= end.Y && !grid[pos]
 }
 
-func (pq PriorityQueue) Len() int           { return len(pq) }
-func (pq PriorityQueue) Less(i, j int) bool { return pq[i].Priority < pq[j].Priority }
-func (pq PriorityQueue) Swap(i, j int) {
+func (pq priorityQueue) Len() int           { return len(pq) }
+func (pq priorityQueue) Less(i, j int) bool { return pq[i].Priority < pq[j].Priority }
+func (pq priorityQueue) Swap(i, j int) {
 	pq[i], pq[j] = pq[j], pq[i]
 	pq[i].Index = i
 	pq[j].Index = j
 }
 
-func (pq *PriorityQueue) Push(x interface{}) {
-	item := x.(*PriorityItem)
+func (pq *priorityQueue) Push(x interface{}) {
+	item := x.(*priorityItem)
 	item.Index = len(*pq)
 	*pq = append(*pq, item)
 }
 
-func (pq *PriorityQueue) Pop() interface{} {
+func (pq *priorityQueue) Pop() interface{} {
 	old := *pq
 	n := len(old)
 	item := old[n-1]

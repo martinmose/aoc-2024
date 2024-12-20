@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-type Position struct {
+type position struct {
 	X, Y int
 }
 
-type Velocity struct {
+type velocity struct {
 	X, Y int
 }
 
@@ -21,6 +21,7 @@ const (
 	yMax = 103
 )
 
+// Run runs the day 14 challenge
 func Run() error {
 	fmt.Println("Day 14:")
 
@@ -84,10 +85,10 @@ func part2Puzzle(input string) int {
 	return seconds
 }
 
-func parseInput(input string) ([]Position, []Velocity) {
+func parseInput(input string) ([]position, []velocity) {
 	lines := strings.Split(strings.TrimSpace(input), "\n")
-	var positions []Position
-	var velocities []Velocity
+	var positions []position
+	var velocities []velocity
 
 	for _, line := range lines {
 		segments := strings.Fields(
@@ -98,15 +99,15 @@ func parseInput(input string) ([]Position, []Velocity) {
 		velX, _ := strconv.Atoi(segments[4])
 		velY, _ := strconv.Atoi(segments[5])
 
-		positions = append(positions, Position{X: posX, Y: posY})
-		velocities = append(velocities, Velocity{X: velX, Y: velY})
+		positions = append(positions, position{X: posX, Y: posY})
+		velocities = append(velocities, velocity{X: velX, Y: velY})
 	}
 
 	return positions, velocities
 }
 
-func calculateNewPositions(positions []Position, velocities []Velocity, steps int) []Position {
-	var newPositions []Position
+func calculateNewPositions(positions []position, velocities []velocity, steps int) []position {
+	var newPositions []position
 	for i := range positions {
 		newX := (positions[i].X + velocities[i].X*steps) % xMax
 		if newX < 0 {
@@ -116,12 +117,12 @@ func calculateNewPositions(positions []Position, velocities []Velocity, steps in
 		if newY < 0 {
 			newY += yMax
 		}
-		newPositions = append(newPositions, Position{X: newX, Y: newY})
+		newPositions = append(newPositions, position{X: newX, Y: newY})
 	}
 	return newPositions
 }
 
-func getQuadrant(pos Position) int {
+func getQuadrant(pos position) int {
 	if pos.X == xMax/2 || pos.Y == yMax/2 {
 		return 0
 	}
@@ -131,15 +132,16 @@ func getQuadrant(pos Position) int {
 			return 1
 		}
 		return 2
-	} else {
-		if pos.Y < yMax/2 {
-			return 3
-		}
-		return 4
 	}
+
+	if pos.Y < yMax/2 {
+		return 3
+	}
+
+	return 4
 }
 
-func calculateAverage(positions []Position) [2]int {
+func calculateAverage(positions []position) [2]int {
 	var avg [2]int
 	for _, pos := range positions {
 		avg[0] += pos.X
@@ -150,7 +152,7 @@ func calculateAverage(positions []Position) [2]int {
 	return avg
 }
 
-func calculateDeviation(positions []Position, average [2]int) [2]int {
+func calculateDeviation(positions []position, average [2]int) [2]int {
 	var deviation [2]int
 	for _, pos := range positions {
 		deviation[0] += int(math.Abs(float64(average[0] - pos.X)))
@@ -161,7 +163,7 @@ func calculateDeviation(positions []Position, average [2]int) [2]int {
 	return deviation
 }
 
-func updatePositions(positions []Position, velocities []Velocity, steps int) {
+func updatePositions(positions []position, velocities []velocity, steps int) {
 	for i := range positions {
 		positions[i].X = (positions[i].X + velocities[i].X*steps) % xMax
 		if positions[i].X < 0 {

@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-type Position struct {
+type positionType struct {
 	x, y int
 }
 
-type StackNode struct {
-	start Position
-	end   Position
+type stackNode struct {
+	start positionType
+	end   positionType
 }
 
 // Run runs the day 10 challenge
@@ -58,15 +58,15 @@ func parseInput(input string) [][]int {
 	return grid
 }
 
-func positionsEqual(a, b Position) bool {
+func positionsEqual(a, b positionType) bool {
 	return a.x == b.x && a.y == b.y
 }
 
-func nodesEqual(a, b StackNode) bool {
+func nodesEqual(a, b stackNode) bool {
 	return positionsEqual(a.start, b.start) && positionsEqual(a.end, b.end)
 }
 
-func tile(grid [][]int, pos Position) int {
+func tile(grid [][]int, pos positionType) int {
 	if pos.x < 0 || pos.x >= len(grid[0]) {
 		return -1
 	}
@@ -77,18 +77,18 @@ func tile(grid [][]int, pos Position) int {
 }
 
 func exploreTrails(grid [][]int, countUnique bool) (int, int) {
-	stack := make([]StackNode, 0, 5000)
+	stack := make([]stackNode, 0, 5000)
 
 	for y := 0; y < len(grid); y++ {
 		for x := 0; x < len(grid[0]); x++ {
 			if grid[y][x] == 0 {
-				pos := Position{x, y}
-				stack = append(stack, StackNode{start: pos, end: pos})
+				pos := positionType{x, y}
+				stack = append(stack, stackNode{start: pos, end: pos})
 			}
 		}
 	}
 
-	paths := make([]StackNode, 0, 2000)
+	paths := make([]stackNode, 0, 2000)
 	uniqueCount := 0
 	totalCount := 0
 
@@ -117,7 +117,7 @@ func exploreTrails(grid [][]int, countUnique bool) (int, int) {
 			continue
 		}
 
-		deltas := []Position{
+		deltas := []positionType{
 			{0, -1}, // Up
 			{1, 0},  // Right
 			{0, 1},  // Down
@@ -125,14 +125,14 @@ func exploreTrails(grid [][]int, countUnique bool) (int, int) {
 		}
 
 		for _, delta := range deltas {
-			nextPosition := Position{
+			nextPosition := positionType{
 				x: position.x + delta.x,
 				y: position.y + delta.y,
 			}
 			nextHeight := tile(grid, nextPosition)
 
 			if nextHeight == currentHeight+1 {
-				stack = append(stack, StackNode{start: node.start, end: nextPosition})
+				stack = append(stack, stackNode{start: node.start, end: nextPosition})
 			}
 		}
 	}

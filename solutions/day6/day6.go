@@ -6,15 +6,15 @@ import (
 	"strings"
 )
 
-type Position struct {
+type position struct {
 	x, y int
 }
 
-type Direction struct {
+type direction struct {
 	dx, dy int
 }
 
-var directions = []Direction{
+var directions = []direction{
 	{0, -1}, // Up (^)
 	{1, 0},  // Right (>)
 	{0, 1},  // Down (v)
@@ -42,7 +42,7 @@ func Run() error {
 
 func part1Puzzle(input string) int {
 	grid, startPos, startDir := parseGrid(input)
-	visited := make(map[Position]bool)
+	visited := make(map[position]bool)
 
 	currentPos := startPos
 	currentDir := startDir
@@ -50,7 +50,7 @@ func part1Puzzle(input string) int {
 	for {
 		visited[currentPos] = true
 
-		nextPos := Position{
+		nextPos := position{
 			x: currentPos.x + currentDir.dx,
 			y: currentPos.y + currentDir.dy,
 		}
@@ -95,10 +95,10 @@ func part2Puzzle(input string) int {
 	return validPositions
 }
 
-func isLooping(startPos Position, startDir Direction, grid [][]rune) bool {
+func isLooping(startPos position, startDir direction, grid [][]rune) bool {
 	currentPos := startPos
 	currentDir := startDir
-	visitCount := make(map[Position]int)
+	visitCount := make(map[position]int)
 
 	for steps := 0; steps < len(grid)*len(grid[0])*4; steps++ {
 		visitCount[currentPos]++
@@ -106,7 +106,7 @@ func isLooping(startPos Position, startDir Direction, grid [][]rune) bool {
 			return true
 		}
 
-		nextPos := Position{
+		nextPos := position{
 			x: currentPos.x + currentDir.dx,
 			y: currentPos.y + currentDir.dy,
 		}
@@ -124,10 +124,10 @@ func isLooping(startPos Position, startDir Direction, grid [][]rune) bool {
 	return false
 }
 
-func parseGrid(input string) ([][]rune, Position, Direction) {
+func parseGrid(input string) ([][]rune, position, direction) {
 	grid := [][]rune{}
-	var startPos Position
-	var startDir Direction
+	var startPos position
+	var startDir direction
 
 	for y, line := range strings.Split(strings.TrimSpace(input), "\n") {
 		row := []rune(line)
@@ -135,19 +135,19 @@ func parseGrid(input string) ([][]rune, Position, Direction) {
 		for x, cell := range row {
 			switch cell {
 			case '^':
-				startPos = Position{x, y}
+				startPos = position{x, y}
 				startDir = directions[0]
 				row[x] = '.'
 			case '>':
-				startPos = Position{x, y}
+				startPos = position{x, y}
 				startDir = directions[1]
 				row[x] = '.'
 			case 'v':
-				startPos = Position{x, y}
+				startPos = position{x, y}
 				startDir = directions[2]
 				row[x] = '.'
 			case '<':
-				startPos = Position{x, y}
+				startPos = position{x, y}
 				startDir = directions[3]
 				row[x] = '.'
 			}
@@ -157,12 +157,12 @@ func parseGrid(input string) ([][]rune, Position, Direction) {
 	return grid, startPos, startDir
 }
 
-func outOfBounds(pos Position, grid [][]rune) bool {
+func outOfBounds(pos position, grid [][]rune) bool {
 	return pos.x < 0 || pos.x >= len(grid[0]) || pos.y < 0 || pos.y >= len(grid)
 }
 
-func rotateDirection(dir Direction) Direction {
-	return Direction{
+func rotateDirection(dir direction) direction {
+	return direction{
 		dx: -dir.dy,
 		dy: dir.dx,
 	}

@@ -8,12 +8,13 @@ import (
 	"strings"
 )
 
-type Game struct {
+type game struct {
 	ButtonA []int64
 	ButtonB []int64
 	Prize   []int64
 }
 
+// Run runs the day 13 challenge
 func Run() error {
 	fmt.Println("Day 13:")
 
@@ -46,7 +47,7 @@ func part1Puzzle(input string) int64 {
 	return result
 }
 
-func solveEquation(game Game) (float64, float64) {
+func solveEquation(game game) (float64, float64) {
 	denominator := float64(game.ButtonA[1])*float64(game.ButtonB[0]) - float64(game.ButtonA[0])*float64(game.ButtonB[1])
 	if math.Abs(denominator) < 1e-6 {
 		return -1, -1
@@ -89,9 +90,9 @@ func part2Puzzle(input string) int64 {
 	return totalTokens
 }
 
-func parseInput(input string, addOffset bool) []Game {
+func parseInput(input string, addOffset bool) []game {
 	lines := strings.Split(strings.TrimSpace(input), "\n")
-	var games []Game
+	var games []game
 
 	for i := 0; i < len(lines); i += 4 {
 		aParts := strings.Split(strings.TrimPrefix(lines[i], "Button A: X+"), ", Y+")
@@ -107,7 +108,7 @@ func parseInput(input string, addOffset bool) []Game {
 			Prize[1] += 1e13
 		}
 
-		games = append(games, Game{ButtonA: ButtonA, ButtonB: ButtonB, Prize: Prize})
+		games = append(games, game{ButtonA: ButtonA, ButtonB: ButtonB, Prize: Prize})
 	}
 
 	return games

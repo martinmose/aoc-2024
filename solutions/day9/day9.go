@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type File struct {
+type file struct {
 	id   int
 	size int
 }
@@ -99,9 +99,9 @@ func calculateChecksum(blocks []int) int {
 	return checksum
 }
 
-func parseDiskMapPart2(input string) []File {
+func parseDiskMapPart2(input string) []file {
 	input = strings.TrimSpace(input)
-	var files []File
+	var files []file
 	fileID := 0
 
 	for i := 0; i < len(input); i++ {
@@ -110,17 +110,17 @@ func parseDiskMapPart2(input string) []File {
 			continue
 		}
 		if i%2 == 0 {
-			files = append(files, File{id: fileID, size: value})
+			files = append(files, file{id: fileID, size: value})
 			fileID++
 		} else {
-			files = append(files, File{id: -1, size: value})
+			files = append(files, file{id: -1, size: value})
 		}
 	}
 
 	return files
 }
 
-func compactDiskPart2(files []File) []File {
+func compactDiskPart2(files []file) []file {
 	for i := 0; i < len(files); i++ {
 		if files[i].id > -1 {
 			continue
@@ -134,7 +134,7 @@ func compactDiskPart2(files []File) []File {
 				files[i] = files[j]
 				files[j].id = -1
 				if sizeDiff > 0 {
-					files = append(files[:i+1], append([]File{{id: -1, size: sizeDiff}}, files[i+1:]...)...)
+					files = append(files[:i+1], append([]file{{id: -1, size: sizeDiff}}, files[i+1:]...)...)
 				}
 				break
 			}
@@ -143,7 +143,7 @@ func compactDiskPart2(files []File) []File {
 	return files
 }
 
-func calculateChecksumPart2(files []File) int {
+func calculateChecksumPart2(files []file) int {
 	checksum := 0
 	position := 0
 

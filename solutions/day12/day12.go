@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-type Position struct {
+type position struct {
 	x, y int
 }
 
 var width, height int
 
-// Run executes the Day 12 challenge
+// Run runs the day 12 challenge
 func Run() error {
 	fmt.Println("Day 12:")
 
@@ -33,13 +33,13 @@ func Run() error {
 
 func part1Puzzle(input string) int {
 	grid := parseInput(input)
-	stack := make([]Position, 0, 1000)
+	stack := make([]position, 0, 1000)
 	sum := 0
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			if grid[y][x] >= 'A' && grid[y][x] <= 'Z' {
-				stack = append(stack, Position{x, y})
+				stack = append(stack, position{x, y})
 			}
 
 			squares := 0
@@ -56,7 +56,7 @@ func part1Puzzle(input string) int {
 				squares++
 
 				lowerC := c + ('a' - 'A')
-				directions := []Position{
+				directions := []position{
 					{0, -1}, // Up
 					{1, 0},  // Right
 					{0, 1},  // Down
@@ -86,13 +86,13 @@ func part1Puzzle(input string) int {
 
 func part2Puzzle(input string) int {
 	grid := parseInput(input)
-	stack := make([]Position, 0, 1000)
+	stack := make([]position, 0, 1000)
 	sum := 0
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			if grid[y][x] >= 'A' && grid[y][x] <= 'Z' {
-				stack = append(stack, Position{x, y})
+				stack = append(stack, position{x, y})
 			}
 
 			squares := 0
@@ -109,7 +109,7 @@ func part2Puzzle(input string) int {
 				squares++
 
 				lowerC := c + ('a' - 'A')
-				directions := []Position{
+				directions := []position{
 					{0, -1},  // Up
 					{1, -1},  // Up-Right
 					{1, 0},   // Right
@@ -173,11 +173,11 @@ func parseInput(input string) [][]rune {
 	return grid
 }
 
-func add(a, b Position) Position {
-	return Position{x: a.x + b.x, y: a.y + b.y}
+func add(a, b position) position {
+	return position{x: a.x + b.x, y: a.y + b.y}
 }
 
-func tile(grid [][]rune, pos Position) rune {
+func tile(grid [][]rune, pos position) rune {
 	if pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height {
 		return '.'
 	}
