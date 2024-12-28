@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc_2024/solutions/day22"
+	"aoc_2024/solutions/day24"
 	"fmt"
 
 	"github.com/joho/godotenv"
@@ -14,29 +14,45 @@ func main() {
 		return
 	}
 
-	// day1.Run()
-	// day2.Run()
-	// day3.Run()
-	// day4.Run()
-	// day5.Run()
-	// day6.Run()
-	// day7.Run()
-	// day8.Run()
-	// day9.Run()
-	// day10.Run()
-	// day11.Run()
-	// day12.Run()
-	// day13.Run()
-	// day14.Run()
-	// day15.Run()
-	// day16.Run()
-	// day17.Run()
-	// day18.Run()
-	// day19.Run()
-	// day20.Run()
-	// day21.Run()
-	day22.Run()
-	// day23.Run()
-	// day24.Run()
-	// day25.Run()
+	fmt.Println("Advent of Code 2024")
+
+	days := []struct {
+		name string
+		run  func() error
+	}{
+		// {"Day 1", day1.Run},
+		// {"Day 2", day2.Run},
+		// {"Day 3", day3.Run},
+		// {"Day 4", day4.Run},
+		// {"Day 5", day5.Run},
+		// {"Day 6", day6.Run},
+		// {"Day 7", day7.Run},
+		// {"Day 8", day8.Run},
+		// {"Day 9", day9.Run},
+		// {"Day 10", day10.Run},
+		// {"Day 11", day11.Run},
+		// {"Day 12", day12.Run},
+		// {"Day 13", day13.Run},
+		// {"Day 14", day14.Run},
+		// {"Day 15", day15.Run},
+		// {"Day 16", day16.Run},
+		// {"Day 17", day17.Run},
+		// {"Day 18", day18.Run},
+		// {"Day 19", day19.Run},
+		// {"Day 20", day20.Run},
+		// {"Day 21", day21.Run},
+		// {"Day 22", day22.Run},
+		// {"Day 23", day23.Run},
+		{"Day 24", day24.Run},
+		// {"Day 25", day25.Run},
+	}
+
+	for _, day := range days {
+		fmt.Printf("Running %s...\n", day.name)
+		if err := day.run(); err != nil {
+			fmt.Printf("Error in %s: %v\n", day.name, err)
+		} else {
+			fmt.Printf("%s completed successfully.\n", day.name)
+		}
+	}
 }
