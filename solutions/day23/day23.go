@@ -7,10 +7,11 @@ import (
 )
 
 type (
-	Graph     map[string][]string
-	StringSet map[string]struct{}
+	graph     map[string][]string
+	stringSet map[string]struct{}
 )
 
+// Run runs the day 23 challenge
 func Run() error {
 	dayPath := "23/input"
 	body, err := utils.HTTPGet(dayPath)
@@ -37,8 +38,8 @@ func part2Puzzle(input string) string {
 	return findPassword(graph)
 }
 
-func parseGraph(lines []string) Graph {
-	graph := make(Graph)
+func parseGraph(lines []string) graph {
+	graph := make(graph)
 	for _, line := range lines {
 		parts := strings.Split(line, "-")
 		graph[parts[0]] = append(graph[parts[0]], parts[1])
@@ -47,7 +48,7 @@ func parseGraph(lines []string) Graph {
 	return graph
 }
 
-func findCycles(graph Graph) int {
+func findCycles(graph graph) int {
 	cycles := make(map[string][]string)
 	for node := range graph {
 		if node[0] != 't' {
@@ -67,15 +68,15 @@ func findCycles(graph Graph) int {
 	return len(cycles)
 }
 
-func findPassword(graph Graph) string {
-	candidateNodes := make(StringSet)
+func findPassword(graph graph) string {
+	candidateNodes := make(stringSet)
 	for node := range graph {
 		candidateNodes[node] = struct{}{}
 	}
 
 	var maxClique []string
 	var cliques [][]string
-	graph.bronKerboschWithPivot(StringSet{}, candidateNodes, StringSet{}, &cliques)
+	graph.bronKerboschWithPivot(stringSet{}, candidateNodes, stringSet{}, &cliques)
 
 	for _, clique := range cliques {
 		if len(clique) > len(maxClique) {
@@ -87,7 +88,7 @@ func findPassword(graph Graph) string {
 	return strings.Join(maxClique, ",")
 }
 
-func (g Graph) bronKerboschWithPivot(r, p, x StringSet, cliques *[][]string) {
+func (g graph) bronKerboschWithPivot(r, p, x stringSet, cliques *[][]string) {
 	if len(p) == 0 && len(x) == 0 {
 		clique := make([]string, 0, len(r))
 		for node := range r {
@@ -109,7 +110,7 @@ func (g Graph) bronKerboschWithPivot(r, p, x StringSet, cliques *[][]string) {
 	}
 }
 
-func (g Graph) selectPivot(p, x StringSet) string {
+func (g graph) selectPivot(p, x stringSet) string {
 	union := p.union(x)
 	for node := range union {
 		return node
@@ -117,32 +118,32 @@ func (g Graph) selectPivot(p, x StringSet) string {
 	return ""
 }
 
-func (g Graph) toSet(slice []string) StringSet {
-	set := make(StringSet)
+func (g graph) toSet(slice []string) stringSet {
+	set := make(stringSet)
 	for _, node := range slice {
 		set[node] = struct{}{}
 	}
 	return set
 }
 
-func (s StringSet) add(value string) {
+func (s stringSet) add(value string) {
 	s[value] = struct{}{}
 }
 
-func (s StringSet) remove(value string) {
+func (s stringSet) remove(value string) {
 	delete(s, value)
 }
 
-func (s StringSet) copy() StringSet {
-	newSet := make(StringSet)
+func (s stringSet) copy() stringSet {
+	newSet := make(stringSet)
 	for key := range s {
 		newSet[key] = struct{}{}
 	}
 	return newSet
 }
 
-func (s StringSet) intersect(other StringSet) StringSet {
-	result := make(StringSet)
+func (s stringSet) intersect(other stringSet) stringSet {
+	result := make(stringSet)
 	for key := range s {
 		if _, exists := other[key]; exists {
 			result[key] = struct{}{}
@@ -151,8 +152,8 @@ func (s StringSet) intersect(other StringSet) StringSet {
 	return result
 }
 
-func (s StringSet) difference(other StringSet) StringSet {
-	result := make(StringSet)
+func (s stringSet) difference(other stringSet) stringSet {
+	result := make(stringSet)
 	for key := range s {
 		if _, exists := other[key]; !exists {
 			result[key] = struct{}{}
@@ -161,7 +162,7 @@ func (s StringSet) difference(other StringSet) StringSet {
 	return result
 }
 
-func (s StringSet) union(other StringSet) StringSet {
+func (s stringSet) union(other stringSet) stringSet {
 	result := s.copy()
 	for key := range other {
 		result[key] = struct{}{}
